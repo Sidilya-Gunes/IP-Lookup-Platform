@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  # 1. PostgreSQL Veritabanı Servisi
+  postgres:
+    image: postgres:14-alpine
+    restart: always
+    environment:
+      # LÜTFEN AWS'E YÜKLERKEN BU DEĞERLERİ GÜVENLİ VE RASTGELE OLARAK DEĞİŞTİRİN
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      # Sadece test etmek için açılabilir, üretimde dışarıya açmak güvenli değildir.
+      - "5432:5432"
+
+  # 2. NestJS Backend Servisi
+  backend:
+    build:
+      context: ./ip-lookup-backend # Dockerfile'ın bulunduğu klasör
+      dockerfile: Dockerfile.backend
+    restart: always
+    ports:
+      # Backend portu (3002) dışarıdan 8080 portuna bağlanacak
+      - "8080:3002" 
+    env_file:
+      - ./ip-lookup-backend/.env
+    depends_on:
+      - postgres # Postgres'in önce başlamasını sağlar
+    networks:
+      - ip_lookup_network
+
+  # 3. Next.js Frontend Servisi
+  frontend:
+    build:
+      context: ./ip-lookup-frontend # Dockerfile'ın bulunduğu klasör
+      dockerfile: Dockerfile.frontend
+    restart: always
+    ports:
+      # Frontend portu dışarıdan 80 portuna bağlanacak (Kullanıcının göreceği ana port)
+      - "80:3000" 
+    # Frontend'in API'ye erişebilmesi için backend'den sonra başlaması gerekir
+    depends_on:
+      - backend
+    networks:
+      - ip_lookup_network
+
+# Veri kalıcılığı için Volume
+volumes:
+  postgres_data:
+
+# Ortak Ağ
+networks:
+  ip_lookup_network:
+    driver: bridge
