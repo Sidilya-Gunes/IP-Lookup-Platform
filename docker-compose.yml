@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # 1. PostgreSQL Veritabanı Servisi
   postgres:
-    image: postgres:14-alpine
+    image: postgres:18-alpine
     restart: always
     environment:
       # LÜTFEN AWS'E YÜKLERKEN BU DEĞERLERİ GÜVENLİ VE RASTGELE OLARAK DEĞİŞTİRİN
