@@ -1,57 +1,57 @@
 version: '3.8'
 
 services:
-  # 1. PostgreSQL Veritabanı Servisi
+  # 1. PostgreSQL Database Service
   postgres:
     image: postgres:18-alpine
     restart: always
     environment:
-      # LÜTFEN AWS'E YÜKLERKEN BU DEĞERLERİ GÜVENLİ VE RASTGELE OLARAK DEĞİŞTİRİN
+      # PLEASE CHANGE THESE VALUES TO SECURE AND RANDOM ONES WHEN DEPLOYING TO AWS
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      # Sadece test etmek için açılabilir, üretimde dışarıya açmak güvenli değildir.
+      # Can be opened for testing only, not safe to expose externally in production.
       - "5432:5432"
 
-  # 2. NestJS Backend Servisi
+  # 2. NestJS Backend Service
   backend:
     build:
-      context: ./ip-lookup-backend # Dockerfile'ın bulunduğu klasör
+      context: ./ip-lookup-backend # The folder where Dockerfile is located
       dockerfile: Dockerfile.backend
     restart: always
     ports:
-      # Backend portu (3002) dışarıdan 8080 portuna bağlanacak
+      # Backend port (3002) will be mapped to port 8080 externally
       - "8080:3002" 
     env_file:
       - ./ip-lookup-backend/.env
     depends_on:
-      - postgres # Postgres'in önce başlamasını sağlar
+      - postgres # Ensures that Postgres starts first
     networks:
       - ip_lookup_network
 
-  # 3. Next.js Frontend Servisi
+  # 3. Next.js Frontend Service
   frontend:
     build:
-      context: ./ip-lookup-frontend # Dockerfile'ın bulunduğu klasör
+      context: ./ip-lookup-frontend # The folder where Dockerfile is located
       dockerfile: Dockerfile.frontend
     restart: always
     ports:
-      # Frontend portu dışarıdan 80 portuna bağlanacak (Kullanıcının göreceği ana port)
+      # Frontend port will be mapped to port 80 externally (The main port the user will see)
       - "80:3000" 
-    # Frontend'in API'ye erişebilmesi için backend'den sonra başlaması gerekir
+    # The frontend needs to start after the backend to be able to access the API
     depends_on:
       - backend
     networks:
       - ip_lookup_network
 
-# Veri kalıcılığı için Volume
+# Volume for data persistence
 volumes:
   postgres_data:
 
-# Ortak Ağ
+# Common Network
 networks:
   ip_lookup_network:
     driver: bridge

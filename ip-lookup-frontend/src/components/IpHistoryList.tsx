@@ -29,7 +29,7 @@ const IpHistoryList: React.FC = () => {
           const response = await axios.get<IpData[]>(HISTORY_ENDPOINT);
           setHistory(response.data);
         }catch(err){
-          setError('Geçmiş verileri yüklenirken bir sorun oluştu.');
+          setError('An error occurred while loading the history data.');
         }finally{
           setLoading(false);
         }
@@ -41,7 +41,7 @@ const IpHistoryList: React.FC = () => {
 
 
     if(loading){
-      return <div className="text-center p-8">Geçmiş yükleniyor...</div>;
+      return <div className="text-center p-8">Loading history...</div>;
     }
 
     if(error){
@@ -49,12 +49,12 @@ const IpHistoryList: React.FC = () => {
     }
 
     if(history.length === 0){
-      return <div className="text-center p-8 text-gray-500">Henüz sorgulanmış bir IP adresi yok.</div>
+      return <div className="text-center p-8 text-gray-500">No IP addresses have been queried yet.</div>
     }
 
     return(
       <div className="max-w-4xl mx-auto p-6 bg-white shadow-xl rounded-lg mt-8">
-            <h2 className="text-3xl font-bold mb-6 text-blue-800 border-b pb-2">📜 Sorgu Geçmişi ({history.length} Kayıt)</h2>
+            <h2 className="text-3xl font-bold mb-6 text-blue-800 border-b pb-2">📜 Query History ({history.length} Records)</h2>
             
             <div className="space-y-4">
               {history.map((item) => (
@@ -66,8 +66,8 @@ const IpHistoryList: React.FC = () => {
                     </span>
                   </div>
                   <div className="text-gray-700">
-                    <p>📍 {item.city || 'Bilinmiyor'} / {item.country || 'Bilinmiyor'}</p>
-                    <p>🌐 Sağlayıcı: {item.isp || 'Bilinmiyor'}</p>
+                    <p>📍 {item.city || 'Unknown'} / {item.country || 'Unknown'}</p>
+                    <p>🌐 Provider: {item.isp || 'Unknown'}</p>
                   </div>
                 </div>
               ))}

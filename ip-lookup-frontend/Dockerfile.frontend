@@ -1,27 +1,27 @@
 # Dockerfile.frontend
 
-# 1. Aşama: Bağımlılıkları Yükleme
+# Stage 1: Install Dependencies
 FROM node:20-alpine AS base
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install
 
-# 2. Aşama: Build (Derleme)
+# Stage 2: Build
 FROM base AS builder
 WORKDIR /app
 COPY . .
 RUN npm run build
 
-# 3. Aşama: Production (Çalıştırma)
+# Stage 3: Production
 FROM node:20-alpine AS runner
 WORKDIR /app
 
-# Next.js'in statik dosyaları çalıştırmak için gerekli bağımlılıkları kopyala
+# Copy dependencies required for Next.js to run static files
 ENV NODE_ENV production
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next ./.next
 COPY --from=base /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 
-# Next.js'i başlat (Production)
+# Start Next.js (Production)
 CMD ["npm", "start"]

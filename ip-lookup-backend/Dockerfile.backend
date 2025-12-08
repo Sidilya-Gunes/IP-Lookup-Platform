@@ -1,37 +1,37 @@
 # Dockerfile.backend
 
-# 1. Aşama: Build (Derleme) Aşaması
+# Stage 1: Build Stage
 FROM node:20-alpine AS builder
 
-# Çalışma dizinini ayarla
+# Set the working directory
 WORKDIR /app
 
-# Package dosyalarını kopyala
+# Copy package files
 COPY package*.json ./
 
-# Sadece üretim bağımlılıklarını kur (hızlı ve hafif)
+# Install all dependencies
 RUN npm install
 
-# Kaynak kodlarını kopyala
+# Copy source code
 COPY . .
 
-# NestJS projesini derle
+# Build the NestJS project
 RUN npm run build
 
 # ----------------------------------------------------
 
-# 2. Aşama: Production (Üretim) Aşaması
+# Stage 2: Production Stage
 FROM node:20-alpine AS production
 
-# Çalışma dizinini ayarla
+# Set the working directory
 WORKDIR /app
 
-# Sadece üretim bağımlılıklarını kur
+# Install production dependencies only
 COPY package*.json ./
 RUN npm install --only=production
 
-# Build aşamasından derlenmiş kodu kopyala
+# Copy the built code from the builder stage
 COPY --from=builder /app/dist ./dist
 
-# Uygulamayı çalıştıracak komut (dist/main.js'yi çalıştırır)
+# Command to run the application (runs dist/main.js)
 CMD ["node", "dist/main"]

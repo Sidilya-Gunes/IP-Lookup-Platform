@@ -36,23 +36,22 @@ const IpLookupForm: React.FC = () => {
         setIpData(response.data);
       } catch (err: any) {
         const errorMessage =
-          err.response?.data?.message ||
-          "Sorgulama başarısız oldu. Lütfen IP adresini ve sunucu durumunu kontrol edin.";
+          err.response?.data?.message || "Lookup failed. Please check the IP address and server status.";
         setError(errorMessage);
       } finally {
         setLoading(false);
       }
     },
-    [ip]
+    [ip, LOOKUP_ENDPOINT]
   );
 
   return (
     <div className="max-w-xl mx-auto p-4 bg-white shadow-lg rounded-lg">
       <h2 className="text-2xl font-bold mb-6 text-gray-800">
-        🌍 IP Adresi Sorgulama
+        🌍 IP Address Lookup
       </h2>
 
-      {/* Input Formu */}
+      {/* Input Form */}
       <form
         onSubmit={handleSubmit}
         className="flex flex-col md:flex-row gap-4 mb-8"
@@ -61,7 +60,7 @@ const IpLookupForm: React.FC = () => {
           type="text"
           value={ip}
           onChange={(e) => setIp(e.target.value)}
-          placeholder="Örn: 8.8.8.8"
+          placeholder="e.g., 8.8.8.8"
           disabled={loading}
           className="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 text-gray-900"
         />
@@ -70,43 +69,41 @@ const IpLookupForm: React.FC = () => {
           disabled={loading}
           className="p-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-blue-300 transition duration-150"
         >
-          {loading ? "Sorgulanıyor..." : "Sorgula"}
+          {loading ? "Looking up..." : "Lookup"}
         </button>
       </form>
 
-      {/* Hata Mesajı */}
       {error && (
         <div
           className="p-4 mb-4 text-sm text-red-800 bg-red-100 rounded-lg"
           role="alert"
         >
-          <span className="font-medium">Hata:</span> {error}
+          <span className="font-medium">Error:</span> {error}
         </div>
       )}
 
-      {/* 3.4 IP Bilgisi Gösterimi */}
       {ipData && <IpInfoCard data={ipData} />}
     </div>
   );
 };
 
-// IP Bilgisi Card Bileşeni
+// IP Info Card Component
 const IpInfoCard: React.FC<{ data: IpData }> = ({ data }) => {
   const info = [
-    { label: "IP Adresi", value: data.ipAddress },
-    { label: "Ülke", value: data.country || "Bilinmiyor" },
-    { label: "Şehir", value: data.city || "Bilinmiyor" },
-    { label: "ISP", value: data.isp || "Bilinmiyor" },
-    { label: "Koordinatlar", value: `${data.latitude}, ${data.longitude}` },
+    { label: "IP Address", value: data.ipAddress },
+    { label: "Country", value: data.country || "Unknown" },
+    { label: "City", value: data.city || "Unknown" },
+    { label: "ISP", value: data.isp || "Unknown" },
+    { label: "Coordinates", value: `${data.latitude}, ${data.longitude}` },
     {
-      label: "Kayıt Tarihi",
+      label: "Record Date",
       value: new Date(data.createdAt).toLocaleDateString(),
     },
   ];
 
   return (
     <div className="border border-gray-200 rounded-xl p-6 bg-gray-50 mt-6">
-      <h3 className="text-xl font-bold mb-4 text-blue-600">✅ Sorgu Sonucu</h3>
+      <h3 className="text-xl font-bold mb-4 text-blue-600">✅ Query Result</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
         {info.map((item, index) => (
           <div key={index} className="flex flex-col">
