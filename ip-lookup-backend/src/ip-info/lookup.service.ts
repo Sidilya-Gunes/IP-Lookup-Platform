@@ -41,4 +41,13 @@ export class LookupService {
 
     return this.repo.save(newRecord);
   }
+
+  async getHistory() {
+    return this.repo.find({
+      order:{
+        created_at:'DESC'
+      },
+      take : 20,
+    });
+  }
 }
