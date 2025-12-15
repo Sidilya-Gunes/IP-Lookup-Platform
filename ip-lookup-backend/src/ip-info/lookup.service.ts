@@ -19,6 +19,18 @@ export class LookupService {
     this.thirdApiUrl = this.configService.get<string>('THIRD_API_URL', 'https://ipwhois.app/json/');
   }
 
+  async get_all() {
+    return this.repo.find();
+  }
+
+  async get_one(ip: string) {
+    const result = await this.repo.findOne({ where: { ip_address: ip } });
+    if (!result) {
+      throw new BadRequestException('IP address not found in history');
+    }
+    return result;
+  }
+
   async lookup(ip: string) {
 
     //  Check DB

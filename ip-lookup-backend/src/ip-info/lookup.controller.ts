@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param } from '@nestjs/common';
 import { LookupService } from './lookup.service';
 import { LookupIpDto } from './dto/LookupIpData';
 
@@ -11,8 +11,13 @@ export class LookupController {
     return this.lookupService.lookup(lookupIpDto.ip);
   }
 
-  @Get('history')
+  @Get('')
   async getIpHistory(){
     return this.lookupService.getHistory();
+    }
+
+    @Get(":ip")
+    async getIpInfo(@Param('ip') ip: string) {
+      return this.lookupService.get_one(ip);
     }
 }
