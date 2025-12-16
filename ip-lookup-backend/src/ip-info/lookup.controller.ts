@@ -13,7 +13,13 @@ export class LookupController {
 
   @Get('')
   async getIpHistory(){
-    return this.lookupService.getHistory();
+    try{
+      // generate error
+      return this.lookupService.getHistory();
+
+    }catch(error){
+      throw error;
+    }
     }
 
     @Get(":ip")
