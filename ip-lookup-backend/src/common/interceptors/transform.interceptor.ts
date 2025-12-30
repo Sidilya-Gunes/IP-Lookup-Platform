@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
 import { NestInterceptor , ExecutionContext, CallHandler } from "@nestjs/common/interfaces";
-import e from "express";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 
