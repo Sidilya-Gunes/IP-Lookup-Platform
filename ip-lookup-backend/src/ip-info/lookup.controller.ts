@@ -11,7 +11,7 @@ export class LookupController {
     return this.lookupService.lookup(lookupIpDto.ip);
   }
 
-  @Get('')
+  @Get('history')
   async getIpHistory(){
     try{
       // generate error

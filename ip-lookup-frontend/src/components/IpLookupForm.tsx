@@ -65,7 +65,12 @@ const IpLookupForm: React.FC<IpLookupFormProps> = ({ onLookupSuccess, isDemoMode
 
         if (!response.ok) throw new Error("API Node rejected the handshake.");
 
-        const data: IpData = await response.json();
+        const rawData = await response.json();
+        const data: IpData = {
+          ...rawData,
+          ipAddress: rawData.ip_address || rawData.ipAddress,
+          createdAt: rawData.created_at || rawData.createdAt,
+        };
         setIpData(data);
         onLookupSuccess();
       } catch (err: any) {
@@ -220,7 +225,9 @@ const IpInfoCard: React.FC<{ data: IpData | null; isDemoMode: boolean }> = ({ da
               height="100%" 
               frameBorder="0" 
               src={mapUrl}
-              allow="fullscreen"
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
               className={`grayscale invert opacity-40 transition-all duration-1000 ${data ? 'contrast-[1.6] scale-[1.2] brightness-[0.7]' : 'contrast-[1.1] scale-[1.0] brightness-[0.4]'}`}
             ></iframe>
             
