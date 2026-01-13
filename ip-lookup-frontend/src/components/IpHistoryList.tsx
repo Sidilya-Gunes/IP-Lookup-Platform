@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect, useCallback } from "react";
 import { IpData } from "types";
 import { ENDPOINTS, WILL_FAIL_MIXED_CONTENT } from "../../constants";
@@ -42,7 +44,12 @@ const IpHistoryList: React.FC<IpHistoryListProps> = ({ refreshTrigger, isDemoMod
       
       if (!response.ok) throw new Error(`Backend Node Protocol Error. Status: ${response.status}`);
       
-      const data: IpData[] = await response.json();
+      const rawData = await response.json();
+      const data: IpData[] = rawData.map((item: any) => ({
+        ...item,
+        ipAddress: item.ip_address || item.ipAddress,
+        createdAt: item.created_at || item.createdAt,
+      }));
       setHistory(data);
       setError(null);
     } catch (err: any) {
