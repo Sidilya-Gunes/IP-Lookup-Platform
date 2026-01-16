@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import IpLookupForm from "@/components/IpLookupForm";
 import IpHistoryList from "@/components/IpHistoryList";
+import { supabase } from "@/lib/supabase";
 
 const App: React.FC = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -15,6 +16,17 @@ const App: React.FC = () => {
   useEffect(() => {
     const savedMode = localStorage.getItem('netintel_demo_mode');
     if (savedMode === 'true') setIsDemoMode(true);
+
+    const fetchData = async () => {
+      const { data, error } = await supabase
+        .from('posts')
+        .select('*');
+      
+      if (error) console.error('Error fetching posts:', error);
+      else console.log('Posts:', data);
+    };
+
+    fetchData();
   }, []);
 
   const toggleDemoMode = () => {
