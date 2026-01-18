@@ -63,7 +63,10 @@ const IpLookupForm: React.FC<IpLookupFormProps> = ({ onLookupSuccess, isDemoMode
           body: JSON.stringify({ ip }),
         });
 
-        if (!response.ok) throw new Error("API Node rejected the handshake.");
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || `API Node rejected the handshake (${response.status})`);
+        }
 
         const rawData = await response.json();
         const data: IpData = {

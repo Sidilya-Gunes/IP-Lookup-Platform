@@ -17,16 +17,6 @@ const App: React.FC = () => {
     const savedMode = localStorage.getItem('netintel_demo_mode');
     if (savedMode === 'true') setIsDemoMode(true);
 
-    const fetchData = async () => {
-      const { data, error } = await supabase
-        .from('posts')
-        .select('*');
-      
-      if (error) console.error('Error fetching posts:', error);
-      else console.log('Posts:', data);
-    };
-
-    fetchData();
   }, []);
 
   const toggleDemoMode = () => {
